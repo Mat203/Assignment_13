@@ -2,6 +2,15 @@
 {
     Dictionary<char, int> charDict = CountFrequency();
     Node root = BuildHuffmanTree(charDict);
+
+    Dictionary<char, string> encodingTable = new Dictionary<char, string>();
+    Encoding(root, "", encodingTable);
+
+    Console.WriteLine("Symbol\tCode");
+    foreach (KeyValuePair<char, string> kvp in encodingTable)
+    {
+        Console.WriteLine($"{kvp.Key}\t{kvp.Value}");
+    }
 }
 
 static Dictionary<char, int> CountFrequency()
@@ -48,10 +57,22 @@ static Node BuildHuffmanTree(Dictionary<char, int> charFrequencies)
     return queue.Dequeue();
 }
 
+static void Encoding(Node node, string code, Dictionary<char, string> encodingTable)
+{
+    if (node.Symbol != null)
+    {
+        encodingTable[(char)node.Symbol] = code;
+    }
+    else
+    {
+        Encoding(node.LeftChild, code + "0", encodingTable);
+        Encoding(node.RightChild, code + "1", encodingTable);
+    }
+}
 
 Main();
 
-class Node
+public class Node
 {
     public char? Symbol { get; set; }
     public int Frequency { get; set; }
