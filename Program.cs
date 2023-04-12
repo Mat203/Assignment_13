@@ -144,20 +144,19 @@ static Dictionary<char, string> ReadEncodingTableFromFile()
             string[] parts = line.Split(':');
             if (parts.Length != 2)
             {
-                // Ошибка в формате строки
                 continue;
             }
             if (parts[0] == "") 
             {
-            char key = ':';
-            string value = parts[1].Trim();
-            encodingTable[key] = value;
+                char key = ':';
+                string value = parts[1].Trim();
+                encodingTable[key] = value;
             }
             else
             {
-            char key = parts[0][0];
-            string value = parts[1].Trim();
-            encodingTable[key] = value;
+                char key = parts[0][0];
+                string value = parts[1].Trim();
+                encodingTable[key] = value;
             }
             
         }
