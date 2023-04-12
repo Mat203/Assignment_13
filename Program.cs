@@ -11,9 +11,16 @@
     {
         Console.WriteLine($"{kvp.Key}:{kvp.Value}");
     }
+    Console.WriteLine("000000000000000000000000000000000000000");
 
     EncodeFile(encodingTable);
     DecodeFile(root);
+    WriteEncodingTableToFile(encodingTable);
+    Dictionary<char, string> encodingTable1 = ReadEncodingTableFromFile();
+    foreach (KeyValuePair<char, string> kvp in encodingTable1)
+    {
+        Console.WriteLine($"{kvp.Key}:{kvp.Value}");
+    }
 }
 
 static Dictionary<char, int> CountFrequency()
@@ -72,6 +79,7 @@ static void Encoding(Node node, string code, Dictionary<char, string> encodingTa
         Encoding(node.RightChild, code + "1", encodingTable);
     }
 }
+
 static void EncodeFile(Dictionary<char, string> encodingTable)
 {
     string text = File.ReadAllText("text.txt");
@@ -81,7 +89,7 @@ static void EncodeFile(Dictionary<char, string> encodingTable)
         encodedText.Add(encodingTable[c]);
     }
     string encodedString = string.Join("", encodedText);
-    File.WriteAllText("etext.txt", encodedString);
+    File.AppendAllText("etext.txt", encodedString);
 }
 
 static void DecodeFile(Node root)
@@ -110,6 +118,53 @@ static void DecodeFile(Node root)
     string decodedString = new string(decodedText.ToArray());
     File.WriteAllText("dtext.txt", decodedString);
 }
+static void WriteEncodingTableToFile(Dictionary<char, string> encodingTable)
+{
+    using (StreamWriter writer = new StreamWriter("t.txt"))
+    {
+        foreach (KeyValuePair<char, string> kvp in encodingTable)
+        {
+            writer.WriteLine($"{kvp.Key}:{kvp.Value}");
+        }
+    }
+}
+
+static Dictionary<char, string> ReadEncodingTableFromFile()
+{
+    Dictionary<char, string> encodingTable = new Dictionary<char, string>();
+
+    using (StreamReader reader = new StreamReader("t.txt"))
+    {
+        string line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            line = line.Trim();
+            if (line.Length == 0) continue;
+            
+            string[] parts = line.Split(':');
+            if (parts.Length != 2)
+            {
+                // Ошибка в формате строки
+                continue;
+            }
+            if (parts[0] == "") 
+            {
+            char key = ':';
+            string value = parts[1].Trim();
+            encodingTable[key] = value;
+            }
+            else
+            {
+            char key = parts[0][0];
+            string value = parts[1].Trim();
+            encodingTable[key] = value;
+            }
+            
+        }
+    }
+
+    return encodingTable;
+}
 
 Main();
 
@@ -120,5 +175,6 @@ public class Node
     public Node LeftChild { get; set; }
     public Node RightChild { get; set; }
 }
+
 
 
