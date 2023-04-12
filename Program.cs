@@ -6,11 +6,14 @@
     Dictionary<char, string> encodingTable = new Dictionary<char, string>();
     Encoding(root, "", encodingTable);
 
-    Console.WriteLine("Symbol\tCode");
+    Console.WriteLine("Symbol   Code");
     foreach (KeyValuePair<char, string> kvp in encodingTable)
     {
-        Console.WriteLine($"{kvp.Key}\t{kvp.Value}");
+        Console.WriteLine($"{kvp.Key}:{kvp.Value}");
     }
+
+    EncodeFile(encodingTable);
+    DecodeFile(root);
 }
 
 static Dictionary<char, int> CountFrequency()
@@ -69,6 +72,44 @@ static void Encoding(Node node, string code, Dictionary<char, string> encodingTa
         Encoding(node.RightChild, code + "1", encodingTable);
     }
 }
+static void EncodeFile(Dictionary<char, string> encodingTable)
+{
+    string text = File.ReadAllText("text.txt");
+    List<string> encodedText = new List<string>();
+    foreach (char c in text)
+    {
+        encodedText.Add(encodingTable[c]);
+    }
+    string encodedString = string.Join("", encodedText);
+    File.WriteAllText("etext.txt", encodedString);
+}
+
+static void DecodeFile(Node root)
+{
+    string encodedString = File.ReadAllText("etext.txt");
+    List<char> decodedText = new List<char>();
+
+    Node currentNode = root;
+    foreach (char bit in encodedString)
+    {
+        if (bit == '0')
+        {
+            currentNode = currentNode.LeftChild;
+        }
+        else if (bit == '1')
+        {
+            currentNode = currentNode.RightChild;
+        }
+
+        if (currentNode.Symbol != null)
+        {
+            decodedText.Add((char)currentNode.Symbol);
+            currentNode = root;
+        }
+    }
+    string decodedString = new string(decodedText.ToArray());
+    File.WriteAllText("dtext.txt", decodedString);
+}
 
 Main();
 
@@ -79,4 +120,5 @@ public class Node
     public Node LeftChild { get; set; }
     public Node RightChild { get; set; }
 }
+
 
