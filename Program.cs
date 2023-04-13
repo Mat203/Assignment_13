@@ -9,7 +9,16 @@
     Console.WriteLine("Symbol   Code");
     foreach (KeyValuePair<char, string> kvp in encodingTable)
     {
-        Console.WriteLine($"{kvp.Key}:{kvp.Value}");
+        string symbol = kvp.Key.ToString();
+        if (symbol == "\n")
+        {
+            symbol = "<N>";
+        }
+        if (symbol == "\r")
+        {
+            symbol = "<R>";
+        }
+        Console.WriteLine($"{symbol}:{kvp.Value}");
     }
     Console.WriteLine("000000000000000000000000000000000000000");
 
@@ -89,7 +98,7 @@ static void EncodeFile(Dictionary<char, string> encodingTable)
         encodedText.Add(encodingTable[c]);
     }
     string encodedString = string.Join("", encodedText);
-    File.AppendAllText("etext.txt", encodedString);
+    File.WriteAllText("etext.txt", encodedString);
 }
 
 static void DecodeFile(Node root)
@@ -124,8 +133,18 @@ static void WriteEncodingTableToFile(Dictionary<char, string> encodingTable)
     {
         foreach (KeyValuePair<char, string> kvp in encodingTable)
         {
-            writer.WriteLine($"{kvp.Key}:{kvp.Value}");
+            string symbol = kvp.Key.ToString();
+            if (symbol == "\n")
+            {
+                symbol = "<N>";
+            }
+            if (symbol == "\r")
+            {
+                symbol = "<R>";
+            }
+            writer.WriteLine($"{symbol}:{kvp.Value}");
         }
+
     }
 }
 
@@ -136,29 +155,32 @@ static Dictionary<char, string> ReadEncodingTableFromFile()
     using (StreamReader reader = new StreamReader("t.txt"))
     {
         string line;
+        char symbol;
         while ((line = reader.ReadLine()) != null)
         {
-            line = line.Trim();
             if (line.Length == 0) continue;
             
-            string[] parts = line.Split(':');
+            string[] parts = line.Split(":");
+
             if (parts.Length != 2)
             {
                 continue;
             }
-            if (parts[0] == "") 
+
+            if (parts[0] == "<N>")
             {
-                char key = ':';
-                string value = parts[1].Trim();
-                encodingTable[key] = value;
+                symbol = '\n';
+            }
+            if (parts[0] == "<R>")
+            {
+                symbol = '\r';
             }
             else
             {
-                char key = parts[0][0];
-                string value = parts[1].Trim();
-                encodingTable[key] = value;
+                symbol = parts[0].ToCharArray()[0];
             }
-            
+
+            encodingTable[symbol] = parts[1];
         }
     }
 
